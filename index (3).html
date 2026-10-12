@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<title>Сурагчийн тайлан · Report card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@600;700&display=swap">
+<style>
+:root{--f-display:"Unbounded","Onest",system-ui,sans-serif;--f-body:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:#EEF2EF;color:#16211C;font-family:var(--f-body);font-size:14px;padding:12px 12px calc(32px + env(safe-area-inset-bottom,0px))}
+.msg{max-width:520px;margin:60px auto;text-align:center;color:#5A6B62;line-height:1.6}
+.msg b{display:block;color:#16211C;font-size:17px;margin-bottom:6px}
+.priv{max-width:760px;margin:14px auto 0;text-align:center;font-size:11.5px;color:#7A8B82;line-height:1.5}
+/* report card (always light, print-like) */
+#rc-stage{position:fixed;left:-10000px;top:0;width:794px;z-index:-1}
+.rcard{width:794px;min-height:1123px;background:#fff;color:#16211C;font-family:var(--f-body);padding:40px 46px;display:flex;flex-direction:column;gap:16px;font-size:13px;line-height:1.5}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:3px solid #1F7A4D;padding-bottom:12px}
+.rc-top>div:first-child{flex:1;min-width:0}
+.rc-top .sch{font-size:11.5px;color:#5A6B62;text-transform:uppercase;letter-spacing:.08em}
+.rc-top h1{font-family:var(--f-display);font-size:21px;margin:4px 0 0;color:#0F2A3F;line-height:1.2}
+.rc-sub{font-size:12.5px;color:#5A6B62;margin-top:2px}
+.rc-top .per{text-align:right;font-size:12px;color:#5A6B62;white-space:nowrap}
+.rc-top .per b{display:block;font-size:14px;color:#0F2A3F}
+.rc-qr{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;color:#5A6B62;text-align:center;line-height:1.25}
+.rc-qr img{width:150px;height:150px;image-rendering:pixelated}
+.rc-name{display:flex;justify-content:space-between;align-items:center;gap:16px;background:#0F2A3F;color:#fff;border-radius:12px;padding:15px 20px}
+.rc-name h2{margin:0;font-family:var(--f-display);font-size:23px;font-weight:600;color:#fff}
+.rc-name .sub{opacity:.8;font-size:13px;margin-top:2px}
+.rc-big{text-align:center;flex:none}
+.rc-big .p{font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1;color:#fff}
+.rc-big .lvl{display:inline-block;margin-top:6px;background:#4CC08A;color:#0F2A3F;border-radius:6px;padding:2px 10px;font-weight:700;font-size:12.5px}
+.rc-k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rc-k div{border:1px solid #D9E1DC;border-radius:10px;padding:9px 11px;min-width:0}
+.rc-k span{display:block;font-size:11px;color:#5A6B62}
+.rc-k b{display:block;font-size:19px;font-family:var(--f-display);font-weight:600;color:#0F2A3F}
+.rc-k em{font-style:normal;font-size:11px;color:#1F7A4D;font-weight:600}
+.rc-sec h4,.rc-box h4{margin:0 0 7px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#1F7A4D}
+.rc-lead{margin:0 0 8px;font-size:13.5px}
+.rc-att{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:8px}
+.rc-att div{border-radius:8px;padding:7px 4px;text-align:center;font-size:11.5px;line-height:1.25}
+.rc-att b{display:block;font-family:var(--f-display);font-size:18px;font-weight:600}
+.rc-att i{display:block;font-style:normal;font-weight:700;font-size:11px}
+.rc-att .g{background:#DDF2E6;color:#1E7F52}.rc-att .m{background:#FAEFD7;color:#8A5A10}.rc-att .b{background:#FBE3E1;color:#B8362F}.rc-att .i{background:#EEE7FA;color:#6D4FB0}
+.rc-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.rc-tbl th,.rc-tbl td{padding:6px 8px;border-bottom:1px solid #E3E9E5;text-align:right;vertical-align:middle}
+.rc-tbl th{background:#EDF2EF;color:#5A6B62;font-size:11px;font-weight:600}
+.rc-tbl.sm td{padding:4px 8px;font-size:12px}
+.rc-tbl .l{text-align:left}
+.rc-tbl td:first-child{white-space:nowrap}
+.rc-tbl .muted{color:#7A8B82;font-size:11px}
+.rc-bar{position:relative;height:8px;border-radius:4px;background:#EDF2EF;display:block;width:150px}
+.rc-bar i{display:block;height:100%;border-radius:4px;background:#1F8A5B}
+.rc-bar u{position:absolute;top:-3px;width:2px;height:14px;background:#3461D1;margin-left:-1px}
+.rc-note{font-size:10.5px;color:#7A8B82;margin-top:4px}
+.tag{display:inline-block;border-radius:5px;padding:0 7px;font-size:11.5px;font-weight:600;white-space:nowrap;background:#EDF2EF;color:#5A6B62}
+.tag.g{background:#DDF2E6;color:#1E7F52}.tag.m{background:#FAEFD7;color:#8A5A10}.tag.b{background:#FBE3E1;color:#B8362F}.tag.i{background:#EEE7FA;color:#6D4FB0}
+.rc-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rc-box{border-radius:10px;padding:12px 14px}
+.rc-box ul{margin:0;padding-left:18px}
+.rc-box li{margin:3px 0}
+.rc-box.g{background:#EAF6EF}.rc-box.b{background:#FDF0EE}.rc-box.b h4{color:#B8362F}.rc-box.i{background:#EFF3FC}.rc-box.i h4{color:#2D55C8}
+.rc-com{border:1px solid #D9E1DC;border-left:4px solid #1F7A4D;border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.65;white-space:pre-wrap}
+.rc-foot{margin-top:auto;display:flex;justify-content:space-between;gap:20px;font-size:12.5px;color:#5A6B62;padding-top:18px}
+.rc-foot div{flex:1;border-top:1px solid #9DB0A6;padding-top:6px}
+.rc-scale{font-size:10.5px;color:#7A8B82}
+/* phone view of a single card */
+.rc-wrap{padding-block:12px 32px}
+.rcard.mob{width:100%;max-width:760px;min-height:0;margin:0 auto;padding:20px 16px;border-radius:14px;box-shadow:0 2px 14px rgba(15,35,30,.12)}
+.rcard.mob .rc-top{flex-wrap:wrap}
+.rcard.mob .rc-top .per{text-align:left;white-space:normal}
+.rcard.mob .rc-name{flex-wrap:wrap}
+.rcard.mob .rc-k{grid-template-columns:repeat(2,1fr)}
+.rcard.mob .rc-att{grid-template-columns:repeat(3,1fr)}
+.rcard.mob .rc-two{grid-template-columns:1fr}
+.rcard.mob .rc-tbl{display:block;overflow-x:auto}
+.rcard.mob .rc-bar{width:90px}
+
+</style></head><body>
+<main id="main"><div class="msg">Ачааллаж байна…</div></main>
+<p class="priv">Энэ тайлангийн мэдээлэл зөвхөн QR код дотор байгаа бөгөөд сайтад хадгалагддаггүй. Шинэчилсэн тайланг багшаас авна уу.</p>
+<script>
+(() => {
+'use strict';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isNum = v => typeof v === 'number' && isFinite(v);
+const DEFAULT_SETTINGS = { scale: [90,80,70,60,50,40,30] };
+const ADVICE = [
+  [/үг|vocab|word/i, 'Өдөр бүр 10–15 үгийг картаар (flashcard) давтаж, үг бүрээр өгүүлбэр зохиож бичих.'],
+  [/speak|ярих/i, 'Гэртээ өдөр бүр 3–5 минут англиар өөрийнхөө тухай ярьж, утсаараа бичиж сонсох.'],
+  [/шалгалт|exam|test|сорил/i, 'Шалгалтын өмнө бүлгийн дүрэм, үгээ давтаж, алдсан даалгавраа дахин хийж үзэх.'],
+  [/гэрийн|homework|даалгавар/i, 'Гэрийн даалгаврыг тухайн өдөрт нь хийж, эцэг эх нь шалгаж хянах.'],
+  [/pearson|workbook|дэвтэр/i, 'Workbook-ийн дасгалыг хичээл бүрийн дараа тогтмол бөглөх.'],
+  [/ирц|attend/i, 'Хичээлдээ цагтаа, тасралтгүй суух.'],
+];
+const adviceFor = name => (ADVICE.find(([re]) => re.test(name)) || [, 'Энэ хэсгийг гэртээ тогтмол давтах.'])[1];
+const P0 = p => p == null ? null : Math.round(p * 100);
+const rate = p => p == null ? '' : p >= .9 ? 'Маш сайн' : p >= .75 ? 'Сайн' : p >= .6 ? 'Дунд' : p >= .4 ? 'Хангалтгүй' : 'Сул';
+const rateCls = p => p == null ? '' : p >= .75 ? 'g' : p >= .6 ? 'm' : 'b';
+const fmtD = v => { if (!v) return ''; const m = v.length === 4 ? v.slice(0, 2) : v.slice(5, 7), d = v.length === 4 ? v.slice(2) : v.slice(8, 10); return `${+m}-р сарын ${+d}`; };
+const cut = (t, n) => { t = String(t || ''); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
+const MISS = { h: 'хийгээгүй', d: 'дутуу', o: 'өгөөгүй' };
+function derive(d) {
+  const str = [], imp = [], rec = [], at = d.at, nm = i => d.cats[i]?.[0] || '';
+  const scored = d.cats.map((r, i) => ({ i, n: r[0], p: r[1], c: r[2] })).filter(x => x.p != null && x.i !== d.ai);
+  scored.filter(x => x.p >= 80).forEach(x => str.push(`«${x.n}» хэсэгт ${x.p}% гүйцэтгэлтэй${x.c != null ? ` (ангийн дундаж ${x.c}%)` : ''}.`));
+  if (at.p != null && at.p >= 95) str.push(`Ирц маш сайн: нийт ${at.n} хичээлээс ${at.P}-д нь бүрэн, цагтаа суусан.`);
+  const exP = d.ex.filter(e => isNum(e[2])).map(e => ({ t: e[1], p: e[2] / e[3], x: e[2], m: e[3] }));
+  exP.filter(e => e.p >= .8).slice(0, 3).forEach(e => str.push(`«${e.t}» шалгалтад ${e.x}/${e.m} (${P0(e.p)}%) авч сайн гүйцэтгэсэн.`));
+  if (exP.length >= 2 && exP[exP.length - 1].p - exP[0].p >= .1) str.push(`Шалгалтын дүн ахиж байна: ${P0(exP[0].p)}% → ${P0(exP[exP.length - 1].p)}%.`);
+  if (d.fin != null && d.ca != null && d.fin - d.ca >= 5) str.push(`Нийт дүн ангийн дунджаас ${Math.round(d.fin - d.ca)} пунктээр өндөр.`);
+  d.prog.filter(p => p[2] && p[1] / p[2] >= .8).forEach(p => str.push(`«${nm(p[0])}»: ${p[2]} хэсгээс ${p[1]}-ийг бүрэн тушаасан.`));
+  if (!str.length && at.P) str.push(`${at.P} хичээлд бүрэн оролцсон. Цаашид илүү идэвхтэй байгаарай.`);
+  scored.filter(x => x.p < 60).forEach(x => { imp.push(`«${x.n}» хэсэг ${x.p}%${x.c != null ? ` (ангийн дундаж ${x.c}%)` : ''} — сайжруулах шаардлагатай.`); rec.push(adviceFor(x.n)); });
+  const hw = d.miss.filter(m => m[3] !== 'o'), hwN = d.cnt ? d.cnt[0] : hw.length;
+  if (hwN) { imp.push(`${hwN} гэрийн даалгавар хийгээгүй эсвэл дутуу хийсэн (огноог доорх жагсаалтаас харна уу).`); rec.push(adviceFor('гэрийн даалгавар')); }
+  const ns = d.miss.filter(m => m[3] === 'o'), nsN = d.cnt ? d.cnt[1] : ns.length;
+  if (nsN) imp.push(`${nsN} шалгалт/ажил өгөөгүй${ns.length ? ': ' + ns.slice(0, 3).map(m => '«' + m[2] + '»').join(', ') + (nsN > 3 ? '…' : '') : ''}.`);
+  exP.filter(e => e.p < .5).slice(0, 3).forEach(e => imp.push(`«${e.t}» шалгалт ${e.x}/${e.m} (${P0(e.p)}%) — энэ сэдвийг дахин давтах.`));
+  if (at.A) imp.push(`${at.A} хичээл чөлөөгүй тасалсан.`);
+  if (at.L) imp.push(`${at.L} удаа хоцорсон${at.lm ? `, нийт ${at.lm} минут` : ''}.`);
+  if (at.U) imp.push(`${at.U} удаа хичээлээс эрт явсан${at.um ? `, нийт ${at.um} минут` : ''}.`);
+  if (at.A || at.L || at.U) rec.push(adviceFor('ирц'));
+  d.prog.filter(p => p[2] && p[1] / p[2] < .5 && !((d.cats[p[0]]?.[1] ?? 100) < 60)).forEach(p => { imp.push(`«${nm(p[0])}»: ${p[2]} хэсгээс зөвхөн ${p[1]}-ийг тушаасан.`); rec.push(adviceFor(nm(p[0]))); });
+  if (!imp.length) imp.push('Одоогоор онцгой анхаарах асуудал алга. Энэ хэмнэлээ хадгалаарай.');
+  return { str, imp, rec: [...new Set(rec)] };
+}
+// compact payload for QR: trim lists so the code stays small enough to scan from paper
+const unb64u = str => { const s = atob(str.replace(/-/g, '+').replace(/_/g, '/')); const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; };
+async function pipeBytes(bytes, stream) { const r = new Blob([bytes]).stream().pipeThrough(stream); return new Uint8Array(await new Response(r).arrayBuffer()); }
+function loadPako() {
+  if (window.pako) return Promise.resolve(window.pako);
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js'; s.onload = () => res(window.pako); s.onerror = rej; document.head.appendChild(s); });
+}
+function findToken() {
+  const sources = [location.hash.slice(1), location.search.slice(1), location.href];
+  for (let src of sources) {
+    try { src = decodeURIComponent(src); } catch (e) {}
+    const m = src.match(/rc[zj]-[A-Za-z0-9_\-]+/);
+    if (m) return m[0];
+  }
+  return '';
+}
+async function decodeCard(tok) {
+  const [kind, body] = [tok.slice(0, 4), tok.slice(4)];
+  let bytes = unb64u(body);
+  if (kind === 'rcz-') {
+    let ok = false;
+    if (window.DecompressionStream) { try { bytes = await pipeBytes(bytes, new DecompressionStream('deflate-raw')); ok = true; } catch (e) {} }
+    if (!ok) { const pako = await loadPako(); bytes = pako.inflateRaw(bytes); }
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+function cardHTML(d, opt = {}) {
+  const ST = { P: 'Ирсэн', L: 'Хоцорсон', U: 'Эрт явсан', A: 'Тасалсан', S: 'Өвчтэй', E: 'Чөлөөтэй' };
+  const stc = { L: 'm', U: 'm', A: 'b', S: 'i', E: 'i' };
+  const pc = v => v == null ? '—' : v + '%';
+  const at = d.at, X = derive(d), cn = i => d.cats[i]?.[0] || '';
+  const more = (n, shown) => n > shown ? `<div class="rc-note">Нийт ${n}-аас сүүлийн ${shown}-ийг харуулав. Бүрэн жагсаалт багшийн PDF тайланд бий.</div>` : '';
+  const scale = d.sc || DEFAULT_SETTINGS.scale;
+  return `<div class="rcard ${opt.mobile ? 'mob' : ''}">
+    <div class="rc-top"><div><div class="sch">${esc(d.sch || 'Ерөнхий боловсролын сургууль')}</div><h1>Сурагчийн гүйцэтгэлийн тайлан</h1><div class="rc-sub">Student Report Card · Англи хэл</div></div>
+      <div class="per"><b>${esc(d.per)}</b>${esc(d.yr)} хичээлийн жил${d.dt ? '<br>Огноо: ' + esc(d.dt) : ''}</div>
+      ${opt.qr ? `<div class="rc-qr"><img src="${opt.qr}" alt="QR"><span>Утсаараа уншуулж<br>тайлангаа харна уу</span></div>` : ''}</div>
+    <div class="rc-name"><div><h2>${esc(d.nm)}</h2><div class="sub">${esc(d.cl)} анги${d.tch ? ' · Багш: ' + esc(d.tch) : ''}</div></div>
+      <div class="rc-big"><div class="p">${d.fin == null ? '—' : d.fin + '%'}</div><div class="lvl">${d.lv ? d.lv + ' түвшин' : 'Дүн бүрдээгүй'}</div></div></div>
+    <div class="rc-k">
+      <div><span>I хагас жил</span><b>${pc(d.f[0])}</b><em>${d.fl[0]}</em></div>
+      <div><span>II хагас жил</span><b>${pc(d.f[1])}</b><em>${d.fl[1]}</em></div>
+      <div><span>Жилийн эцсийн</span><b>${pc(d.f[2])}</b><em>${d.fl[2]}</em></div>
+      <div><span>Ангидаа эзлэх байр</span><b>${d.rk ? d.rk[0] + ' / ' + d.rk[1] : '—'}</b><em>Ангийн дундаж ${pc(d.ca)}</em></div></div>
+
+    <div class="rc-sec"><h4>1. Ирц</h4>
+      <p class="rc-lead">Нийт <b>${at.n}</b> хичээлээс <b>${at.P}</b>-д нь бүрэн, цагтаа суусан. Ирцийн хувь: <b>${pc(at.p)}</b>.</p>
+      <div class="rc-att">
+        <div class="g"><b>${at.P}</b>Ирсэн</div>
+        <div class="m"><b>${at.L}</b>Хоцорсон${at.lm ? `<i>${at.lm} мин</i>` : ''}</div>
+        <div class="m"><b>${at.U}</b>Эрт явсан${at.um ? `<i>${at.um} мин</i>` : ''}</div>
+        <div class="b"><b>${at.A}</b>Тасалсан</div>
+        <div class="i"><b>${at.S}</b>Өвчтэй</div>
+        <div class="i"><b>${at.E}</b>Чөлөөтэй</div></div>
+      ${d.log.length ? `<table class="rc-tbl sm"><thead><tr><th class="l">Огноо</th><th class="l">Төлөв</th><th>Минут</th><th class="l">Тайлбар</th></tr></thead><tbody>
+        ${d.log.map(r => `<tr><td class="l">${esc(fmtD(r[0]))}</td><td class="l"><span class="tag ${stc[r[1]] || ''}">${ST[r[1]]}</span></td><td>${r[2] || ''}</td><td class="l">${esc(r[3])}</td></tr>`).join('')}</tbody></table>${more(d.nlog, d.log.length)}` : ''}</div>
+
+    <div class="rc-sec"><h4>2. Үнэлгээний төрлөөр</h4><table class="rc-tbl"><thead><tr><th class="l">Төрөл</th><th class="l bar"></th><th>Сурагч</th><th>Анги</th><th class="l">Үнэлгээ</th></tr></thead><tbody>
+      ${d.cats.map(r => `<tr><td class="l">${esc(r[0])}</td><td class="l bar"><span class="rc-bar"><i style="width:${Math.min(100, r[1] || 0)}%"></i><u style="left:${Math.min(100, r[2] || 0)}%"></u></span></td><td><b>${pc(r[1])}</b></td><td>${pc(r[2])}</td><td class="l"><span class="tag ${rateCls(r[1] == null ? null : r[1] / 100)}">${rate(r[1] == null ? null : r[1] / 100) || '—'}</span></td></tr>`).join('')}</tbody></table>
+      <div class="rc-note">Ногоон зураас — сурагчийн хувь, босоо зураас — ангийн дундаж.</div>
+      ${d.prog.length ? `<p class="rc-lead" style="margin-top:8px">${d.prog.map(p => `«${esc(cn(p[0]))}»: ${p[2]} хэсгээс <b>${p[1]}</b>-ийг бүрэн тушаасан.`).join(' ')}</p>` : ''}</div>
+
+    ${d.ex.length ? `<div class="rc-sec"><h4>3. Шалгалт, сорилын дүн</h4><table class="rc-tbl sm"><thead><tr><th class="l">Огноо</th><th class="l">Шалгалт</th><th>Оноо</th><th>Хувь</th><th>Анги</th><th class="l">Үнэлгээ</th></tr></thead><tbody>
+      ${d.ex.map(e => { const p = isNum(e[2]) ? e[2] / e[3] : null; return `<tr><td class="l">${esc(fmtD(e[0]))}</td><td class="l">${esc(e[1])}${cn(e[5]) ? `<span class="muted"> · ${esc(cn(e[5]))}</span>` : ''}</td><td>${e[2] == null ? '<span class="tag b">өгөөгүй</span>' : e[2] === 'Ч' ? 'Ч' : `${e[2]}/${e[3]}`}</td><td><b>${p == null ? '—' : P0(p) + '%'}</b></td><td>${pc(e[4])}</td><td class="l">${p == null ? '' : `<span class="tag ${rateCls(p)}">${rate(p)}</span>`}</td></tr>`; }).join('')}</tbody></table>${more(d.nex, d.ex.length)}</div>` : ''}
+
+    <div class="rc-sec"><h4>${d.ex.length ? 4 : 3}. Хийгээгүй, дутуу даалгавар</h4>
+      ${d.miss.length ? `<table class="rc-tbl sm"><thead><tr><th class="l">Огноо</th><th class="l">Төрөл</th><th class="l">Даалгавар</th><th class="l">Байдал</th></tr></thead><tbody>
+      ${d.miss.map(m => `<tr><td class="l">${esc(fmtD(m[1]) || '—')}</td><td class="l">${esc(cn(m[0]))}</td><td class="l">${esc(m[2])}</td><td class="l"><span class="tag ${m[3] === 'd' ? 'm' : 'b'}">${MISS[m[3]]}</span></td></tr>`).join('')}</tbody></table>${more(d.nmiss, d.miss.length)}` : '<p class="rc-lead">Бүх даалгавраа хийсэн. 👏</p>'}</div>
+
+    <div class="rc-two">
+      <div class="rc-box g"><h4>Сайн байгаа тал</h4><ul>${X.str.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div class="rc-box b"><h4>Анхаарч сайжруулах зүйл</h4><ul>${X.imp.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div>
+    ${X.rec.length ? `<div class="rc-box i"><h4>Гэрээр хийх зөвлөмж</h4><ul>${X.rec.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+    <div class="rc-sec"><h4>Багшийн дүгнэлт</h4><div class="rc-com">${esc(d.com)}</div></div>
+    <div class="rc-scale">Үнэлгээний шатлал: VIII ≥${scale[0]}% · VII ≥${scale[1]}% · VI ≥${scale[2]}% · V ≥${scale[3]}% · IV ≥${scale[4]}% · III ≥${scale[5]}% · II ≥${scale[6]}% · I &lt;${scale[6]}%</div>
+    ${opt.mobile ? '' : `<div class="rc-foot"><div>Багш: ${esc(d.tch)}</div><div>Эцэг эх / асран хамгаалагч</div></div>`}
+  </div>`;
+}
+async function show() {
+  const main = document.getElementById('main');
+  const h = findToken();
+  if (!h) { main.innerHTML = '<div class="msg"><b>Сурагчийн тайлан</b>Багшаас авсан QR кодыг утасныхаа камераар уншуулж тайлангаа нээнэ үү.</div>'; return; }
+  try { const d = await decodeCard(h); main.innerHTML = cardHTML(d, { mobile: true }); document.title = d.nm + ' · Report card'; }
+  catch (e) { main.innerHTML = '<div class="msg"><b>Тайлан нээгдсэнгүй</b>QR код бүрэн уншигдаагүй байж магадгүй. Дахин уншуулна уу.<br><small style="opacity:.7">Код: ' + h.length + ' · ' + String(e && (e.message || e)).slice(0, 80).replace(/[<>&]/g, '') + '</small></div>'; }
+}
+window.addEventListener('hashchange', show); show();
+})();
+</script></body></html>
